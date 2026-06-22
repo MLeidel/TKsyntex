@@ -1,0 +1,97 @@
+<h1>Tksyntex</h1>
+<h2>Syntax Highlighting for Tkinter Text Widgets</h2>
+<p><img alt="alt text" src="images/TKrm1.png" title="Screenshot showing highlighted code" /></p>
+<h2>Overview</h2>
+<p><code>Tksyntex</code> provides real‑time syntax highlighting for <code>tkinter.Text</code> widgets. It reuses lexers and color schemes from the <a href="https://pygments.org/">Pygments</a> library, giving you access to many languages and beautiful themes out of the box.</p>
+<h2>Installation</h2>
+<pre><code class="language-bash">pip install pygments
+</code></pre>
+<p>No other dependencies are required (the module itself is just one file, <code>Tksyntex.py</code>).</p>
+<h2>Usage</h2>
+<pre><code class="language-python">from Tksyntex import SyntaxHighlighter
+
+# ... after creating your tkinter Text widget ...
+self.highlighter = SyntaxHighlighter(
+    text_widget=tktext,
+    language=&quot;cpp&quot;,
+    style_name=&quot;default&quot;,
+    debounce_ms=200   # milliseconds to wait before rehighlighting while typing
+)
+</code></pre>
+<p>If you want to highlight a file whose language you know:</p>
+<pre><code class="language-python"># Map file extensions to Pygments lexer names
+extension_to_lexer = {
+    &quot;.py&quot;: &quot;python&quot;,
+    &quot;.js&quot;: &quot;javascript&quot;,
+    &quot;.c&quot;:  &quot;cpp&quot;,
+    &quot;.java&quot;: &quot;java&quot;,
+    &quot;.html&quot;: &quot;html&quot;,
+    &quot;.css&quot;: &quot;css&quot;,
+    &quot;.go&quot;: &quot;go&quot;,
+    &quot;.rs&quot;: &quot;rust&quot;,
+    &quot;.sh&quot;: &quot;bash&quot;,
+    &quot;.json&quot;: &quot;json&quot;,
+    &quot;.sql&quot;: &quot;sql&quot;,
+    &quot;.md&quot;: &quot;markdown&quot;,
+    &quot;.ini&quot;: &quot;ini&quot;,
+    &quot;.h&quot;: &quot;cpp&quot;,
+}
+
+# Then, based on your file's extension:
+self.highlighter.set_language(lang)
+</code></pre>
+<p>For plain text or when you don’t want any highlighting, simply skip the <code>set_language</code> call, or use <code>"text"</code> for language.</p>
+<blockquote>
+<p><strong>Important:</strong> This module is <strong>not</strong> a full text editor. It does not handle line numbers, auto‑indentation, or any other editor features. It only provides syntax highlighting on top of a standard tkinter <code>Text</code> widget.</p>
+</blockquote>
+<h2>Complete Minimal Example</h2>
+<p>Here’s a self‑contained script that opens a tkinter window with a <code>Text</code> widget and highlights a small C++ code snippet:</p>
+<pre><code class="language-python">import tkinter as tk
+from Tksyntex import SyntaxHighlighter
+
+if __name__ == &quot;__main__&quot;:
+    root = tk.Tk()
+    root.title(&quot;Tksyntex Demo&quot;)
+
+    # Create a Text widget
+    text = tk.Text(root, wrap=&quot;none&quot;)
+    text.pack(fill=&quot;both&quot;, expand=True)
+
+    # Insert some C++ code
+    code = '''#include &lt;iostream&gt;
+
+int main() {
+    std::cout &lt;&lt; &quot;Hello, world!&quot; &lt;&lt; std::endl;
+    return 0;
+}
+'''
+    text.insert(&quot;1.0&quot;, code)
+
+    # Create the highlighter (debounce only matters during live editing)
+    highlighter = SyntaxHighlighter(
+        text_widget=text,
+        language=&quot;cpp&quot;,
+        font_name=&quot;consolas&quot;,
+        font_size=14,
+        style_name=&quot;material&quot;,  # monokai for dark, default for light
+        debounce_ms=100
+    )
+
+    highlighter.highlight() # &quot;text&quot; for no highlighting
+
+    root.mainloop()
+</code></pre>
+<p>This will display the code with syntax highlighting as soon as the window appears.</p>
+<h2>How It Works</h2>
+<ul>
+<li><code>SyntaxHighlighter</code> uses Pygments to parse the widget’s content and apply the correct tags (colours, fonts) to code tokens.</li>
+<li>Highlighting is triggered:<ul>
+<li>Initially after text is loaded into the Text widget</li>
+<li>Afterwards, whenever the content changes (debounced to avoid performance issues while typing).</li>
+<li>When ever the <code>highlight</code> method is called (highlighter.highlight())</li>
+</ul>
+</li>
+<li>The <code>style_name</code> parameter accepts any Pygments style name (e.g., <code>"monokai"</code>, <code>"colorful"</code>, <code>"native"</code>).<br />
+and can be changed with <code>highlighter.set_language</code> method.</li>
+</ul>
+<hr />
